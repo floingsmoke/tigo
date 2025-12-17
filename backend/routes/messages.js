@@ -49,7 +49,8 @@ router.get('/conversations/:id/messages', requireAuth, async (req, res) => {
         const conversationId = req.params.id;
 
         // Check if user is part of this conversation
-        const conversation = db.prepare(`
+        // Check if user is part of this conversation
+        const conversation = await db.prepare(`
       SELECT * FROM conversations WHERE id = ? AND (user1_id = ? OR user2_id = ?)
     `).get(conversationId, userId, userId);
 
