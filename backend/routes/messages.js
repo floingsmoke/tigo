@@ -15,7 +15,7 @@ router.get('/conversations', requireAuth, async (req, res) => {
         const db = await getDb();
         const userId = req.session.userId;
 
-        const conversations = db.prepare(`
+        const conversations = await db.prepare(`
       SELECT c.*, 
              tr.status as request_status,
              t.departure_city, t.arrival_city, t.date as trip_date,
@@ -58,13 +58,13 @@ router.get('/conversations/:id/messages', requireAuth, async (req, res) => {
         }
 
         // Mark messages as read
-        db.prepare(`
+        await db.prepare(`
       UPDATE messages SET read = 1 
       WHERE conversation_id = ? AND sender_id != ?
     `).run(conversationId, userId);
 
         // Get messages
-        const messages = db.prepare(`
+        const messages = await db.prepare(`
       SELECT m.*, u.name as sender_name, u.profile_photo as sender_photo
       FROM messages m
       JOIN users u ON m.sender_id = u.id
@@ -74,7 +74,7 @@ router.get('/conversations/:id/messages', requireAuth, async (req, res) => {
 
         // Get conversation info
         const otherUserId = conversation.user1_id === userId ? conversation.user2_id : conversation.user1_id;
-        const otherUser = db.prepare('SELECT id, name, profile_photo FROM users WHERE id = ?').get(otherUserId);
+        const otherUser = await db.prepare('SELECT id, name, profile_photo FROM users WHERE id = ?').get(otherUserId);
 
         res.json({ messages, conversation, otherUser });
     } catch (error) {
@@ -96,7 +96,8 @@ router.post('/conversations/:id/messages', requireAuth, async (req, res) => {
         }
 
         // Check if user is part of this conversation
-        const conversation = db.prepare(`
+        // Check if user is part of this conversation
+        const conversation = await db.prepare(`
       SELECT * FROM conversations WHERE id = ? AND (user1_id = ? OR user2_id = ?)
     `).get(conversationId, userId, userId);
 
@@ -105,21 +106,21 @@ router.post('/conversations/:id/messages', requireAuth, async (req, res) => {
         }
 
         // Insert message
-        const result = db.prepare(`
+        const result = await db.prepare(`
       INSERT INTO messages (conversation_id, sender_id, content) VALUES (?, ?, ?)
     `).run(conversationId, userId, content.trim());
 
         // Create notification for other user
         const otherUserId = conversation.user1_id === userId ? conversation.user2_id : conversation.user1_id;
-        const sender = db.prepare('SELECT name FROM users WHERE id = ?').get(userId);
+        const sender = await db.prepare('SELECT name FROM users WHERE id = ?').get(userId);
 
-        db.prepare(`
+        await db.prepare(`
       INSERT INTO notifications (user_id, type, title, message, link)
       VALUES (?, 'new_message', 'Nouveau message', ?, '/messages.html')
     `).run(otherUserId, `${sender.name}: ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}`);
 
         // Get the inserted message
-        const message = db.prepare(`
+        const message = await db.prepare(`
       SELECT m.*, u.name as sender_name, u.profile_photo as sender_photo
       FROM messages m
       JOIN users u ON m.sender_id = u.id
@@ -137,7 +138,7 @@ router.post('/conversations/:id/messages', requireAuth, async (req, res) => {
 router.get('/unread-count', requireAuth, async (req, res) => {
     try {
         const db = await getDb();
-        const result = db.prepare(`
+        const result = await db.prepare(`
       SELECT COUNT(*) as count FROM messages m
       JOIN conversations c ON m.conversation_id = c.id
       WHERE (c.user1_id = ? OR c.user2_id = ?) 

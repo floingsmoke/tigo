@@ -65,7 +65,7 @@ router.get('/', optionalAuth, async (req, res) => {
 
         query += ` ORDER BY t.date ASC, t.time ASC`;
 
-        const trips = db.prepare(query).all(...params);
+        const trips = await db.prepare(query).all(...params);
         res.json({ trips });
     } catch (error) {
         console.error('Get trips error:', error);
@@ -79,7 +79,7 @@ router.get('/calendar', async (req, res) => {
         const db = await getDb();
         const { start, end } = req.query;
 
-        const trips = db.prepare(`
+        const trips = await db.prepare(`
       SELECT t.*, u.name as driver_name
       FROM trips t
       JOIN users u ON t.user_id = u.id
@@ -99,7 +99,7 @@ router.get('/calendar', async (req, res) => {
 router.get('/:id', optionalAuth, async (req, res) => {
     try {
         const db = await getDb();
-        const trip = db.prepare(`
+        const trip = await db.prepare(`
       SELECT t.*, u.name as driver_name, u.email as driver_email, 
              u.phone as driver_phone, u.profile_photo as driver_photo
       FROM trips t
@@ -115,7 +115,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
         let hasRequested = false;
         let requestStatus = null;
         if (req.session.userId) {
-            const existingRequest = db.prepare(`
+            const existingRequest = await db.prepare(`
         SELECT status FROM trip_requests 
         WHERE trip_id = ? AND requester_id = ?
       `).get(req.params.id, req.session.userId);
@@ -145,7 +145,7 @@ router.post('/', requireAuth, upload.single('photo'), async (req, res) => {
 
         const photo = req.file ? '/uploads/trips/' + req.file.filename : null;
 
-        const result = db.prepare(`
+        const result = await db.prepare(`
       INSERT INTO trips (
         user_id, departure_city, departure_lat, departure_lng,
         arrival_city, arrival_lat, arrival_lng,
@@ -173,7 +173,7 @@ router.put('/:id', requireAuth, upload.single('photo'), async (req, res) => {
     try {
         const db = await getDb();
         // Check ownership
-        const trip = db.prepare('SELECT user_id FROM trips WHERE id = ?').get(req.params.id);
+        const trip = await db.prepare('SELECT user_id FROM trips WHERE id = ?').get(req.params.id);
         if (!trip || trip.user_id !== req.session.userId) {
             return res.status(403).json({ error: 'Not authorized' });
         }
@@ -198,7 +198,7 @@ router.put('/:id', requireAuth, upload.single('photo'), async (req, res) => {
         updateQuery += ' WHERE id = ?';
         params.push(req.params.id);
 
-        db.prepare(updateQuery).run(...params);
+        await db.prepare(updateQuery).run(...params);
         res.json({ message: 'Trip updated' });
     } catch (error) {
         console.error('Update trip error:', error);
@@ -210,12 +210,12 @@ router.put('/:id', requireAuth, upload.single('photo'), async (req, res) => {
 router.delete('/:id', requireAuth, async (req, res) => {
     try {
         const db = await getDb();
-        const trip = db.prepare('SELECT user_id FROM trips WHERE id = ?').get(req.params.id);
+        const trip = await db.prepare('SELECT user_id FROM trips WHERE id = ?').get(req.params.id);
         if (!trip || trip.user_id !== req.session.userId) {
             return res.status(403).json({ error: 'Not authorized' });
         }
 
-        db.prepare('DELETE FROM trips WHERE id = ?').run(req.params.id);
+        await db.prepare('DELETE FROM trips WHERE id = ?').run(req.params.id);
         res.json({ message: 'Trip deleted' });
     } catch (error) {
         console.error('Delete trip error:', error);
@@ -227,7 +227,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
 router.get('/user/my-trips', requireAuth, async (req, res) => {
     try {
         const db = await getDb();
-        const trips = db.prepare(`
+        const trips = await db.prepare(`
       SELECT * FROM trips WHERE user_id = ? ORDER BY date DESC
     `).all(req.session.userId);
 
@@ -246,7 +246,7 @@ router.post('/:id/request', requireAuth, async (req, res) => {
         const { message } = req.body;
 
         // Get trip info
-        const trip = db.prepare(`
+        const trip = await db.prepare(`
       SELECT t.*, u.id as driver_id, u.name as driver_name 
       FROM trips t JOIN users u ON t.user_id = u.id 
       WHERE t.id = ?
@@ -261,7 +261,7 @@ router.post('/:id/request', requireAuth, async (req, res) => {
         }
 
         // Check if already requested
-        const existingRequest = db.prepare(`
+        const existingRequest = await db.prepare(`
       SELECT id FROM trip_requests WHERE trip_id = ? AND requester_id = ?
     `).get(tripId, req.session.userId);
 
@@ -270,15 +270,15 @@ router.post('/:id/request', requireAuth, async (req, res) => {
         }
 
         // Create request
-        const result = db.prepare(`
+        const result = await db.prepare(`
       INSERT INTO trip_requests (trip_id, requester_id, message) VALUES (?, ?, ?)
     `).run(tripId, req.session.userId, message || null);
 
         // Get requester name
-        const requester = db.prepare('SELECT name FROM users WHERE id = ?').get(req.session.userId);
+        const requester = await db.prepare('SELECT name FROM users WHERE id = ?').get(req.session.userId);
 
         // Create notification for driver
-        db.prepare(`
+        await db.prepare(`
       INSERT INTO notifications (user_id, type, title, message, link)
       VALUES (?, 'request_received', 'Nouvelle demande de trajet', ?, ?)
     `).run(
@@ -298,12 +298,12 @@ router.post('/:id/request', requireAuth, async (req, res) => {
 router.get('/:id/requests', requireAuth, async (req, res) => {
     try {
         const db = await getDb();
-        const trip = db.prepare('SELECT user_id FROM trips WHERE id = ?').get(req.params.id);
+        const trip = await db.prepare('SELECT user_id FROM trips WHERE id = ?').get(req.params.id);
         if (!trip || trip.user_id !== req.session.userId) {
             return res.status(403).json({ error: 'Not authorized' });
         }
 
-        const requests = db.prepare(`
+        const requests = await db.prepare(`
       SELECT tr.*, u.name as requester_name, u.profile_photo as requester_photo
       FROM trip_requests tr
       JOIN users u ON tr.requester_id = u.id
@@ -326,7 +326,7 @@ router.put('/requests/:requestId/respond', requireAuth, async (req, res) => {
         const requestId = req.params.requestId;
 
         // Get request and trip info
-        const request = db.prepare(`
+        const request = await db.prepare(`
       SELECT tr.*, t.user_id as driver_id, t.departure_city, t.arrival_city
       FROM trip_requests tr
       JOIN trips t ON tr.trip_id = t.id
@@ -338,10 +338,10 @@ router.put('/requests/:requestId/respond', requireAuth, async (req, res) => {
         }
 
         // Update request status
-        db.prepare('UPDATE trip_requests SET status = ? WHERE id = ?').run(status, requestId);
+        await db.prepare('UPDATE trip_requests SET status = ? WHERE id = ?').run(status, requestId);
 
         // Get driver name
-        const driver = db.prepare('SELECT name FROM users WHERE id = ?').get(req.session.userId);
+        const driver = await db.prepare('SELECT name FROM users WHERE id = ?').get(req.session.userId);
 
         // Notify requester
         const notifTitle = status === 'accepted' ? 'Demande acceptée !' : 'Demande refusée';
@@ -349,7 +349,7 @@ router.put('/requests/:requestId/respond', requireAuth, async (req, res) => {
             ? `${driver.name} a accepté votre demande pour le trajet ${request.departure_city} → ${request.arrival_city}`
             : `${driver.name} a refusé votre demande pour le trajet ${request.departure_city} → ${request.arrival_city}`;
 
-        db.prepare(`
+        await db.prepare(`
       INSERT INTO notifications (user_id, type, title, message, link)
       VALUES (?, ?, ?, ?, ?)
     `).run(
@@ -362,7 +362,7 @@ router.put('/requests/:requestId/respond', requireAuth, async (req, res) => {
 
         // If accepted, create conversation
         if (status === 'accepted') {
-            db.prepare(`
+            await db.prepare(`
         INSERT INTO conversations (trip_request_id, user1_id, user2_id)
         VALUES (?, ?, ?)
       `).run(requestId, req.session.userId, request.requester_id);

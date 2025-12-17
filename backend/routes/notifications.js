@@ -13,7 +13,7 @@ const router = express.Router();
 router.get('/', requireAuth, async (req, res) => {
     try {
         const db = await getDb();
-        const notifications = db.prepare(`
+        const notifications = await db.prepare(`
       SELECT * FROM notifications 
       WHERE user_id = ?
       ORDER BY created_at DESC
@@ -31,7 +31,7 @@ router.get('/', requireAuth, async (req, res) => {
 router.get('/unread-count', requireAuth, async (req, res) => {
     try {
         const db = await getDb();
-        const result = db.prepare(`
+        const result = await db.prepare(`
       SELECT COUNT(*) as count FROM notifications 
       WHERE user_id = ? AND read = 0
     `).get(req.session.userId);
@@ -47,7 +47,7 @@ router.get('/unread-count', requireAuth, async (req, res) => {
 router.put('/:id/read', requireAuth, async (req, res) => {
     try {
         const db = await getDb();
-        db.prepare(`
+        await db.prepare(`
       UPDATE notifications SET read = 1 
       WHERE id = ? AND user_id = ?
     `).run(req.params.id, req.session.userId);
@@ -63,7 +63,7 @@ router.put('/:id/read', requireAuth, async (req, res) => {
 router.put('/read-all', requireAuth, async (req, res) => {
     try {
         const db = await getDb();
-        db.prepare(`
+        await db.prepare(`
       UPDATE notifications SET read = 1 WHERE user_id = ?
     `).run(req.session.userId);
 
@@ -78,7 +78,7 @@ router.put('/read-all', requireAuth, async (req, res) => {
 router.delete('/:id', requireAuth, async (req, res) => {
     try {
         const db = await getDb();
-        db.prepare(`
+        await db.prepare(`
       DELETE FROM notifications WHERE id = ? AND user_id = ?
     `).run(req.params.id, req.session.userId);
 

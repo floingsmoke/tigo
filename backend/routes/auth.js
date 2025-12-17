@@ -50,7 +50,7 @@ router.post('/register', async (req, res) => {
         }
 
         // Check if user exists
-        const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+        const existingUser = await db.prepare('SELECT id FROM users WHERE email = ?').get(email);
         if (existingUser) {
             return res.status(400).json({ error: 'Email already registered' });
         }
@@ -59,7 +59,7 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Insert user
-        const result = db.prepare(`
+        const result = await db.prepare(`
       INSERT INTO users (email, password, name, phone) VALUES (?, ?, ?, ?)
     `).run(email, hashedPassword, name, phone || null);
 
@@ -92,7 +92,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Find user
-        const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+        const user = await db.prepare('SELECT * FROM users WHERE email = ?').get(email);
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
@@ -136,7 +136,7 @@ router.post('/logout', (req, res) => {
 router.get('/me', requireAuth, async (req, res) => {
     try {
         const db = await getDb();
-        const user = db.prepare(`
+        const user = await db.prepare(`
       SELECT id, email, name, phone, profile_photo, created_at 
       FROM users WHERE id = ?
     `).get(req.session.userId);
@@ -170,9 +170,9 @@ router.put('/profile', requireAuth, upload.single('profile_photo'), async (req, 
         updateQuery += ' WHERE id = ?';
         params.push(userId);
 
-        db.prepare(updateQuery).run(...params);
+        await db.prepare(updateQuery).run(...params);
 
-        const updatedUser = db.prepare(`
+        const updatedUser = await db.prepare(`
       SELECT id, email, name, phone, profile_photo FROM users WHERE id = ?
     `).get(userId);
 
@@ -188,7 +188,7 @@ router.get('/check', async (req, res) => {
     try {
         if (req.session.userId) {
             const db = await getDb();
-            const user = db.prepare(`
+            const user = await db.prepare(`
           SELECT id, email, name, phone, profile_photo FROM users WHERE id = ?
         `).get(req.session.userId);
             res.json({ authenticated: true, user });
