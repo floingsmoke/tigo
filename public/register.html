@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Créez votre compte Tigo">
+    <title>Inscription - Tigo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+
+<body>
+    <div class="toast-container" id="toast-container"></div>
+
+    <main class="auth-page">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="/" class="auth-logo">🚗 Tigo</a>
+                <h1 class="auth-title">Créez votre compte</h1>
+            </div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label class="form-label">Nom complet *</label>
+                    <input type="text" class="form-input" id="name" placeholder="Jean Dupont" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input type="email" class="form-input" id="email" placeholder="votre@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Téléphone</label>
+                    <input type="tel" class="form-input" id="phone" placeholder="06 12 34 56 78">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mot de passe *</label>
+                    <input type="password" class="form-input" id="password" placeholder="••••••••" required
+                        minlength="6">
+                    <span class="form-hint">Au moins 6 caractères</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirmer le mot de passe *</label>
+                    <input type="password" class="form-input" id="password-confirm" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                    Créer mon compte
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Déjà inscrit ? <a href="/login.html">Connectez-vous</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/app.js"></script>
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('password-confirm').value;
+
+            if (password !== passwordConfirm) {
+                showToast('Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, phone, password }),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast('Compte créé avec succès !', 'success');
+                    setTimeout(() => window.location.href = '/', 1000);
+                } else {
+                    showToast(data.error || 'Erreur lors de l\'inscription', 'error');
+                }
+            } catch (error) {
+                showToast('Erreur de connexion au serveur', 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>
