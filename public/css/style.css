@@ -1578,6 +1578,27 @@ p {
   color: var(--dark);
 }
 
+.settings-avatar-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.settings-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 4px solid var(--white);
+  box-shadow: 0 0 0 2px var(--gray-200);
+}
+
+.settings-avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
 /* Utilities */
 .hidden {
   display: none !important;
