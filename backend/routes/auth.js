@@ -156,27 +156,61 @@ router.get('/me', requireAuth, async (req, res) => {
 router.put('/profile', requireAuth, upload.single('profile_photo'), async (req, res) => {
     try {
         const db = await getDb();
-        const { name, phone } = req.body;
+        const { name, phone, email, password } = req.body;
         const userId = req.session.userId;
 
-        let updateQuery = 'UPDATE users SET name = ?, phone = ?';
+        // Fetch current user to compare values
+        const currentUser = await db.prepare('SELECT email FROM users WHERE id = ?').get(userId);
+
+        // 1. Handle Email Change
+        let emailChanged = false;
+        if (email && email !== currentUser.email) {
+            // Check if new email is taken
+            const emailTaken = await db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email, userId);
+            if (emailTaken) {
+                return res.status(400).json({ error: 'Cet email est déjà utilisé' });
+            }
+            emailChanged = true;
+        }
+
+        // 2. Prepare Update Query
+        let updateFields = ['name = ?', 'phone = ?'];
         let params = [name, phone];
 
+        if (email) {
+            updateFields.push('email = ?');
+            params.push(email);
+        }
+
+        if (password && password.trim() !== '') {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            updateFields.push('password = ?');
+            params.push(hashedPassword);
+        }
+
         if (req.file) {
-            updateQuery += ', profile_photo = ?';
+            updateFields.push('profile_photo = ?');
             params.push('/uploads/profiles/' + req.file.filename);
         }
 
-        updateQuery += ' WHERE id = ?';
+        // 3. Execute Update
+        const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
         params.push(userId);
 
-        await db.prepare(updateQuery).run(...params);
+        await db.prepare(query).run(...params);
 
-        const updatedUser = await db.prepare(`
-      SELECT id, email, name, phone, profile_photo FROM users WHERE id = ?
-    `).get(userId);
+        // 4. Return updated user
+        const updatedUserQuery = `
+            SELECT id, email, name, phone, profile_photo 
+            FROM users WHERE id = ?
+        `;
+        const updatedUser = await db.prepare(updatedUserQuery).get(userId);
 
-        res.json({ message: 'Profile updated', user: updatedUser });
+        res.json({
+            message: 'Profil mis à jour avec succès',
+            user: updatedUser,
+            emailChanged: emailChanged
+        });
     } catch (error) {
         console.error('Update profile error:', error);
         res.status(500).json({ error: 'Server error' });
