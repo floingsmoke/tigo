@@ -220,7 +220,7 @@ function initSqliteSchema(wrapper) {
       password TEXT NOT NULL,
       name TEXT NOT NULL,
       phone TEXT,
-      profile_photo TEXT DEFAULT '/assets/images/default-avatar.png',
+      profile_photo TEXT DEFAULT '/assets/images/default-avatar.svg',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
     CREATE TABLE IF NOT EXISTS trips (

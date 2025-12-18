@@ -62,7 +62,7 @@ async function loadConversations() {
 
         container.innerHTML = data.conversations.map(conv => `
             <div class="conversation-item ${currentActive == conv.id ? 'active' : ''}" data-id="${conv.id}">
-                <img src="${conv.other_user_photo || '/assets/images/default-avatar.png'}" alt="" class="conversation-avatar">
+                <img src="${conv.other_user_photo || '/assets/images/default-avatar.svg'}" alt="" class="conversation-avatar">
                 <div class="conversation-info">
                     <div class="conversation-name">${conv.other_user_name}</div>
                     <div class="conversation-preview">${conv.last_message || 'Nouvelle conversation'}</div>
@@ -143,7 +143,7 @@ async function loadMessages(conversationId, isInitialLoad = false) {
 
         messagesContainer.innerHTML = data.messages.map(msg => `
             <div class="message ${msg.sender_id === messagesPageUser.id ? 'sent' : ''}">
-                <img src="${msg.sender_photo || '/assets/images/default-avatar.png'}" alt="" class="message-avatar">
+                <img src="${msg.sender_photo || '/assets/images/default-avatar.svg'}" alt="" class="message-avatar">
                 <div class="message-content">
                     <p class="message-text">${escapeHtml(msg.content)}</p>
                     <div class="message-time">${formatTimeAgo(msg.created_at)}</div>

@@ -5,85 +5,85 @@
 
 // Format date to French locale
 function formatDate(dateString) {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('fr-FR', options);
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('fr-FR', options);
 }
 
 // Format date short
 function formatDateShort(dateString) {
-    const options = { day: 'numeric', month: 'short' };
-    return new Date(dateString).toLocaleDateString('fr-FR', options);
+  const options = { day: 'numeric', month: 'short' };
+  return new Date(dateString).toLocaleDateString('fr-FR', options);
 }
 
 // Show toast notification
 function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
+  const container = document.getElementById('toast-container');
+  if (!container) return;
 
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
     <span>${message}</span>
     <button class="toast-close" onclick="this.parentElement.remove()">×</button>
   `;
 
-    container.appendChild(toast);
+  container.appendChild(toast);
 
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-    }, 5000);
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
 }
 
 // Mobile menu toggle
 document.addEventListener('DOMContentLoaded', () => {
-    const toggle = document.getElementById('navbar-toggle');
-    const nav = document.getElementById('navbar-nav');
+  const toggle = document.getElementById('navbar-toggle');
+  const nav = document.getElementById('navbar-nav');
 
-    if (toggle && nav) {
-        toggle.addEventListener('click', () => {
-            nav.classList.toggle('active');
-        });
-    }
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+    });
+  }
 });
 
 // Notification dropdown
 document.addEventListener('DOMContentLoaded', () => {
-    const notifBtn = document.getElementById('notifications-btn');
-    const notifDropdown = document.getElementById('notification-dropdown');
+  const notifBtn = document.getElementById('notifications-btn');
+  const notifDropdown = document.getElementById('notification-dropdown');
 
-    if (notifBtn && notifDropdown) {
-        notifBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            notifDropdown.classList.toggle('active');
-        });
+  if (notifBtn && notifDropdown) {
+    notifBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      notifDropdown.classList.toggle('active');
+    });
 
-        document.addEventListener('click', (e) => {
-            if (!notifDropdown.contains(e.target)) {
-                notifDropdown.classList.remove('active');
-            }
-        });
-    }
+    document.addEventListener('click', (e) => {
+      if (!notifDropdown.contains(e.target)) {
+        notifDropdown.classList.remove('active');
+      }
+    });
+  }
 });
 
 // Capacity labels
 const capacityLabels = {
-    small: 'Petit colis',
-    medium: 'Moyen colis',
-    large: 'Grand colis'
+  small: 'Petit colis',
+  medium: 'Moyen colis',
+  large: 'Grand colis'
 };
 
 // Availability type labels
 const availabilityLabels = {
-    both: 'Livraison & Récupération',
-    delivery: 'Livraison',
-    pickup: 'Récupération'
+  both: 'Livraison & Récupération',
+  delivery: 'Livraison',
+  pickup: 'Récupération'
 };
 
 // Create trip card HTML
 function createTripCard(trip) {
-    return `
+  return `
     <a href="/trip-detail.html?id=${trip.id}" class="trip-card">
       <div class="trip-card-header">
         <div class="trip-route">
@@ -123,7 +123,7 @@ function createTripCard(trip) {
       </div>
       <div class="trip-card-footer">
         <div class="trip-driver">
-          <img src="${trip.driver_photo || '/assets/images/default-avatar.png'}" alt="" class="trip-driver-avatar">
+          <img src="${trip.driver_photo || '/assets/images/default-avatar.svg'}" alt="" class="trip-driver-avatar">
           <span class="trip-driver-name">${trip.driver_name}</span>
         </div>
         <span class="trip-capacity">

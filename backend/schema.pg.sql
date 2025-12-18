@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   password TEXT NOT NULL,
   name TEXT NOT NULL,
   phone TEXT,
-  profile_photo TEXT DEFAULT '/assets/images/default-avatar.png',
+  profile_photo TEXT DEFAULT '/assets/images/default-avatar.svg',
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
