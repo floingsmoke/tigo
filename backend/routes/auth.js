@@ -155,6 +155,10 @@ router.get('/me', requireAuth, async (req, res) => {
 // Update profile
 router.put('/profile', requireAuth, upload.single('profile_photo'), async (req, res) => {
     try {
+        console.log('PUT /profile called');
+        console.log('Body:', req.body);
+        console.log('File:', req.file);
+
         const db = await getDb();
         const { name, phone, email, password } = req.body;
         const userId = req.session.userId;
