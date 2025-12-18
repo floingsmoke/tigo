@@ -19,10 +19,11 @@
 
 .map-sidebar {
     position: absolute;
-    top: 20px;
+    top: 80px;
+    /* Increased from 20px to avoid zoom controls */
     left: 20px;
     width: 350px;
-    max-height: calc(100% - 40px);
+    max-height: calc(100% - 100px);
     background: var(--white);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
