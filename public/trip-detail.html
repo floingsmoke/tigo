@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Détails du trajet - Tigo">
+    <title>Détail du trajet - Tigo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M19 17h2l.64-2.54c.24-.959.52-1.962-.01-2.481-.53-.52-1.57-.126-2.63-.189V9a3 3 0 0 0-3-3h-2.21a5 5 0 0 0-4.58 3H4a2 2 0 0 0-2 2v4h2" />
+                    <circle cx="6.5" cy="17.5" r="2.5" />
+                    <circle cx="16.5" cy="17.5" r="2.5" />
+                </svg>
+                Tigo
+            </a>
+
+            <div class="navbar-nav" id="navbar-nav">
+                <a href="/" class="navbar-link">Accueil</a>
+                <a href="/trips.html" class="navbar-link">Trajets</a>
+                <a href="/map.html" class="navbar-link">Carte</a>
+                <a href="/calendar.html" class="navbar-link">Calendrier</a>
+            </div>
+
+            <div class="navbar-actions">
+                <div class="navbar-notifications hidden" id="navbar-notifications">
+                    <button class="navbar-icon-btn" id="notifications-btn">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                        <span class="notification-badge hidden" id="notification-count">0</span>
+                    </button>
+                    <div class="notification-dropdown" id="notification-dropdown"></div>
+                </div>
+
+                <a href="/messages.html" class="navbar-icon-btn hidden" id="messages-btn">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                </a>
+
+                <div class="navbar-auth" id="navbar-auth">
+                    <a href="/login.html" class="btn btn-ghost">Connexion</a>
+                    <a href="/register.html" class="btn btn-primary">S'inscrire</a>
+                </div>
+
+                <a href="/profile.html" class="navbar-user hidden" id="navbar-user">
+                    <img src="/assets/images/default-avatar.svg" alt="Profile" class="navbar-avatar" id="navbar-avatar">
+                    <span class="navbar-username" id="navbar-username">Utilisateur</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Trip Detail Page -->
+    <main class="trip-detail-page">
+        <div class="trip-detail-container">
+            <!-- Loading -->
+            <div class="loading" id="trip-loading">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Trip Card (hidden initially) -->
+            <div class="trip-detail-card hidden" id="trip-detail">
+                <div class="trip-detail-header">
+                    <div class="trip-detail-route">
+                        <div class="trip-detail-city">
+                            <span class="trip-detail-city-label">Départ</span>
+                            <h2 class="trip-detail-city-name" id="departure-city">Paris</h2>
+                        </div>
+                        <div class="trip-detail-arrow">→</div>
+                        <div class="trip-detail-city">
+                            <span class="trip-detail-city-label">Arrivée</span>
+                            <h2 class="trip-detail-city-name" id="arrival-city">Lyon</h2>
+                        </div>
+                    </div>
+                    <div class="trip-detail-meta">
+                        <div class="trip-detail-meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                            <span id="trip-date">15 décembre 2025</span>
+                        </div>
+                        <div class="trip-detail-meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12,6 12,12 16,14" />
+                            </svg>
+                            <span id="trip-time">08:00</span>
+                        </div>
+                        <div class="trip-detail-meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                            </svg>
+                            <span id="trip-capacity">Moyen colis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trip-detail-body">
+                    <!-- Description -->
+                    <div class="trip-detail-section">
+                        <h3 class="trip-detail-section-title">Description</h3>
+                        <p class="trip-detail-description" id="trip-description">
+                            Information sur le trajet...
+                        </p>
+                    </div>
+
+                    <!-- Driver -->
+                    <div class="trip-detail-section">
+                        <h3 class="trip-detail-section-title">Conducteur</h3>
+                        <div class="trip-detail-driver">
+                            <img src="/assets/images/default-avatar.png" alt="Photo du conducteur"
+                                class="trip-detail-driver-avatar" id="driver-photo">
+                            <div>
+                                <h4 class="trip-detail-driver-name" id="driver-name">Nom du conducteur</h4>
+                                <p class="trip-detail-driver-info">Membre depuis 2025</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="trip-detail-actions" id="trip-actions">
+                        <!-- Will be populated by JS based on auth state -->
+                    </div>
+
+                    <!-- Request Form (hidden initially) -->
+                    <div class="trip-request-form hidden" id="request-form">
+                        <h4 class="trip-request-form-title">📨 Envoyer une demande</h4>
+                        <div class="form-group">
+                            <label class="form-label">Votre message au conducteur</label>
+                            <textarea class="form-textarea" id="request-message"
+                                placeholder="Bonjour, je souhaite vous confier un colis de..."></textarea>
+                        </div>
+                        <div style="display: flex; gap: var(--spacing-md);">
+                            <button class="btn btn-primary" id="send-request-btn">Envoyer la demande</button>
+                            <button class="btn btn-ghost" id="cancel-request-btn">Annuler</button>
+                        </div>
+                    </div>
+
+                    <!-- Request Status -->
+                    <div class="hidden" id="request-status">
+                        <div class="badge" id="request-status-badge">En attente</div>
+                    </div>
+
+                    <!-- Requests List (for trip owner) -->
+                    <div class="trip-detail-section hidden" id="requests-section">
+                        <h3 class="trip-detail-section-title">Demandes reçues</h3>
+                        <div class="requests-list" id="requests-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border: none; padding-top: 0;">
+                <p>© 2025 Tigo. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        let tripData = null;
+        let tripPageUser = null; // Use different variable name to avoid conflict with auth.js
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tripId = urlParams.get('id');
+
+            if (!tripId) {
+                showToast('Trajet non trouvé', 'error');
+                setTimeout(() => window.location.href = '/trips.html', 1500);
+                return;
+            }
+
+            // Check auth
+            try {
+                const authRes = await fetch('/api/auth/check', { credentials: 'include' });
+                const authData = await authRes.json();
+                if (authData.authenticated) {
+                    tripPageUser = authData.user;
+                }
+            } catch (e) {
+                console.error('Auth check error:', e);
+            }
+
+            // Load trip
+            await loadTrip(tripId);
+        });
+
+        async function loadTrip(tripId) {
+            try {
+                const response = await fetch(`/api/trips/${tripId}`, { credentials: 'include' });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Trip not found');
+                }
+
+                tripData = data.trip;
+                renderTrip(data);
+
+                document.getElementById('trip-loading').classList.add('hidden');
+                document.getElementById('trip-detail').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Load trip error:', error);
+                showToast('Erreur lors du chargement du trajet', 'error');
+                setTimeout(() => window.location.href = '/trips.html', 1500);
+            }
+        }
+
+        function renderTrip(data) {
+            try {
+                const { trip, hasRequested, requestStatus } = data;
+
+                document.getElementById('departure-city').textContent = trip.departure_city;
+                document.getElementById('arrival-city').textContent = trip.arrival_city;
+                document.getElementById('trip-date').textContent = formatDate(trip.date);
+                document.getElementById('trip-time').textContent = trip.time;
+                document.getElementById('trip-description').textContent = trip.description || 'Aucune description fournie.';
+                document.getElementById('driver-name').textContent = trip.driver_name;
+
+                if (trip.driver_photo) {
+                    document.getElementById('driver-photo').src = trip.driver_photo;
+                }
+
+                const capacityLabels = { small: 'Petit colis', medium: 'Moyen colis', large: 'Grand colis' };
+                document.getElementById('trip-capacity').textContent = capacityLabels[trip.capacity] || trip.capacity;
+
+                // Actions based on state
+                const actionsContainer = document.getElementById('trip-actions');
+                actionsContainer.innerHTML = '';
+
+                if (!tripPageUser) {
+                    actionsContainer.innerHTML = `
+                        <a href="/login.html" class="btn btn-primary">Connectez-vous pour demander ce trajet</a>
+                    `;
+                } else if (tripPageUser.id === trip.user_id) {
+                    // Owner - show requests
+                    document.getElementById('requests-section').classList.remove('hidden');
+
+                    // Add delete button
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn btn-outline-danger'; // Assuming this class exists or similar, if not I'll use inline style or btn-ghost with red color
+                    deleteBtn.style.color = 'var(--error)';
+                    deleteBtn.style.borderColor = 'var(--error)';
+                    deleteBtn.style.marginTop = '1rem';
+                    deleteBtn.innerHTML = `
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        Supprimer ce trajet
+                    `;
+                    deleteBtn.onclick = () => confirmDeleteTrip(trip.id);
+                    actionsContainer.appendChild(deleteBtn);
+
+                    loadRequests(trip.id);
+                } else if (hasRequested) {
+                    // Already requested
+                    const statusBadge = document.getElementById('request-status-badge');
+                    const statusLabels = { pending: 'En attente', accepted: 'Acceptée', rejected: 'Refusée' };
+                    const statusClasses = { pending: 'badge-warning', accepted: 'badge-success', rejected: 'badge-error' };
+
+                    statusBadge.textContent = statusLabels[requestStatus] || requestStatus;
+                    statusBadge.className = `badge ${statusClasses[requestStatus] || 'badge-primary'}`;
+                    document.getElementById('request-status').classList.remove('hidden');
+
+                    if (requestStatus === 'accepted') {
+                        actionsContainer.innerHTML = `
+                            <a href="/messages.html" class="btn btn-primary">Voir la conversation</a>
+                        `;
+                    }
+                } else {
+                    // Can request
+                    const requestBtn = document.createElement('button');
+                    requestBtn.className = 'btn btn-primary';
+                    requestBtn.innerHTML = `
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13"/>
+                            <polygon points="22,2 15,22 11,13 2,9"/>
+                        </svg>
+                        Demander ce trajet
+                    `;
+                    requestBtn.addEventListener('click', () => {
+                        document.getElementById('request-form').classList.remove('hidden');
+                        requestBtn.classList.add('hidden');
+                    });
+                    actionsContainer.appendChild(requestBtn);
+                }
+
+                // Setup event listeners
+                setupEventListeners(trip);
+            } catch (error) {
+                console.error('Render trip error:', error);
+                showToast('Erreur lors de l\'affichage du trajet', 'error');
+            }
+        }
+
+        function setupEventListeners(trip) {
+            // Cancel request button
+            const cancelBtn = document.getElementById('cancel-request-btn');
+            if (cancelBtn) {
+                cancelBtn.onclick = () => {
+                    document.getElementById('request-form').classList.add('hidden');
+                    const primaryBtn = document.querySelector('#trip-actions .btn-primary');
+                    if (primaryBtn) primaryBtn.classList.remove('hidden');
+                };
+            }
+
+            // Send request button
+            const sendBtn = document.getElementById('send-request-btn');
+            if (sendBtn) {
+                sendBtn.onclick = async () => {
+                    const message = document.getElementById('request-message').value;
+
+                    try {
+                        const response = await fetch(`/api/trips/${trip.id}/request`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ message }),
+                            credentials: 'include'
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showToast('Demande envoyée !', 'success');
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            showToast(data.error || 'Erreur', 'error');
+                        }
+                    } catch (e) {
+                        console.error('Request error:', e);
+                        showToast('Erreur de connexion', 'error');
+                    }
+                };
+            }
+        }
+
+        async function loadRequests(tripId) {
+            try {
+                const response = await fetch(`/api/trips/${tripId}/requests`, { credentials: 'include' });
+                const data = await response.json();
+
+                const container = document.getElementById('requests-list');
+
+                if (data.requests.length === 0) {
+                    container.innerHTML = '<p class="text-muted">Aucune demande pour le moment.</p>';
+                    return;
+                }
+
+                container.innerHTML = data.requests.map(req => `
+                    <div class="request-item">
+                        <img src="${req.requester_photo || '/assets/images/default-avatar.png'}" class="request-avatar" alt="">
+                        <div class="request-info">
+                            <h4 class="request-name">${req.requester_name}</h4>
+                            <p class="request-message">${req.message || 'Pas de message'}</p>
+                            ${req.status === 'pending' ? `
+                                <div class="request-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="respondRequest(${req.id}, 'accepted')">Accepter</button>
+                                    <button class="btn btn-ghost btn-sm" onclick="respondRequest(${req.id}, 'rejected')">Refuser</button>
+                                </div>
+                            ` : `
+                                <span class="request-status ${req.status}">${req.status === 'accepted' ? 'Acceptée' : 'Refusée'}</span>
+                            `}
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (e) {
+                console.error('Error loading requests:', e);
+            }
+        }
+
+        async function confirmDeleteTrip(tripId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce trajet ? Cette action est irréversible.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/trips/${tripId}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    showToast('Trajet supprimé avec succès', 'success');
+                    setTimeout(() => window.location.href = '/trips.html', 1500);
+                } else {
+                    const data = await response.json();
+                    showToast(data.error || 'Erreur lors de la suppression', 'error');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                showToast('Erreur de connexion', 'error');
+            }
+        }
+
+        async function respondRequest(requestId, status) {
+            try {
+                const response = await fetch(`/api/trips/requests/${requestId}/respond`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status }),
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    showToast(status === 'accepted' ? 'Demande acceptée !' : 'Demande refusée', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast('Erreur', 'error');
+                }
+            } catch (e) {
+                console.error('Respond error:', e);
+                showToast('Erreur de connexion', 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

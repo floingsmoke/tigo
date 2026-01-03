@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Tigo - Covoiturage et livraison de colis entre particuliers. Postez votre trajet ou trouvez un conducteur pour transporter vos colis.">
+  <title>Tigo - Covoiturage & Livraison entre particuliers</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/components.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path
+            d="M19 17h2l.64-2.54c.24-.959.52-1.962-.01-2.481-.53-.52-1.57-.126-2.63-.189V9a3 3 0 0 0-3-3h-2.21a5 5 0 0 0-4.58 3H4a2 2 0 0 0-2 2v4h2" />
+          <circle cx="6.5" cy="17.5" r="2.5" />
+          <circle cx="16.5" cy="17.5" r="2.5" />
+        </svg>
+        Tigo
+      </a>
+
+      <div class="navbar-nav" id="navbar-nav">
+        <a href="/" class="navbar-link active">Accueil</a>
+        <a href="/trips.html" class="navbar-link">Trajets</a>
+        <a href="/map.html" class="navbar-link">Carte</a>
+        <a href="/calendar.html" class="navbar-link">Calendrier</a>
+      </div>
+
+      <div class="navbar-actions">
+        <!-- Notifications (visible when logged in) -->
+        <div class="navbar-notifications hidden" id="navbar-notifications">
+          <button class="navbar-icon-btn" id="notifications-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span class="notification-badge hidden" id="notification-count">0</span>
+          </button>
+          <div class="notification-dropdown" id="notification-dropdown">
+            <div class="notification-dropdown-header">
+              <span class="notification-dropdown-title">Notifications</span>
+              <button class="btn btn-ghost btn-sm" id="mark-all-read">Tout marquer lu</button>
+            </div>
+            <div class="notification-dropdown-body" id="notification-list">
+              <!-- Notifications loaded dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages (visible when logged in) -->
+        <a href="/messages.html" class="navbar-icon-btn hidden" id="messages-btn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <span class="notification-badge hidden" id="message-count">0</span>
+        </a>
+
+        <!-- Post Trip Button -->
+        <a href="/post-trip.html" class="btn btn-primary hidden" id="post-trip-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Poster un trajet
+        </a>
+
+        <!-- Auth buttons (visible when logged out) -->
+        <div class="navbar-auth" id="navbar-auth">
+          <a href="/login.html" class="btn btn-ghost">Connexion</a>
+          <a href="/register.html" class="btn btn-primary">S'inscrire</a>
+        </div>
+
+        <!-- User menu (visible when logged in) -->
+        <a href="/profile.html" class="navbar-user hidden" id="navbar-user">
+          <img src="/assets/images/default-avatar.svg" alt="Profile" class="navbar-avatar" id="navbar-avatar">
+          <span class="navbar-username" id="navbar-username">Utilisateur</span>
+        </a>
+
+        <!-- Mobile menu toggle -->
+        <button class="navbar-toggle" id="navbar-toggle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          🚗 Covoiturage + 📦 Livraison
+        </div>
+        <h1 class="hero-title">
+          Voyagez ensemble,<br>
+          <span>transportez malin</span>
+        </h1>
+        <p class="hero-description">
+          Tigo connecte les conducteurs et les particuliers pour du covoiturage et de la livraison de colis. Économique,
+          écologique et convivial.
+        </p>
+        <div class="hero-actions">
+          <a href="/trips.html" class="btn btn-primary btn-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            Voir les trajets
+          </a>
+          <a href="/register.html" class="btn btn-secondary btn-lg">
+            Créer un compte
+          </a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img
+          src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+          alt="Covoiturage sur la route">
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="section" style="background: var(--gray-100);">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Comment ça marche ?</h2>
+        <p class="section-description">
+          En 3 étapes simples, trouvez un conducteur ou proposez votre trajet
+        </p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon">📝</div>
+          <span class="step-number">1</span>
+          <h3 class="step-title">Postez ou recherchez</h3>
+          <p class="step-description">
+            Publiez votre trajet avec les détails (date, heure, capacité) ou recherchez un trajet existant sur notre
+            carte interactive.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-icon">💬</div>
+          <span class="step-number">2</span>
+          <h3 class="step-title">Contactez le conducteur</h3>
+          <p class="step-description">
+            Envoyez une demande avec votre message. Le conducteur reçoit une notification et peut accepter ou refuser.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-icon">🤝</div>
+          <span class="step-number">3</span>
+          <h3 class="step-title">Voyagez ensemble</h3>
+          <p class="step-description">
+            Une fois accepté, discutez directement pour organiser les détails. Partagez le trajet et économisez !
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Pourquoi choisir Tigo ?</h2>
+        <p class="section-description">
+          Une plateforme simple et sécurisée pour tous vos besoins de transport
+        </p>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <div class="feature-content">
+            <h4>Sécurisé</h4>
+            <p>Profils vérifiés et système de messagerie intégré pour des échanges en toute confiance.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12,6 12,12 16,14" />
+            </svg>
+          </div>
+          <div class="feature-content">
+            <h4>Flexible</h4>
+            <p>Covoiturage classique ou transport de colis, adaptez Tigo à vos besoins.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+          </div>
+          <div class="feature-content">
+            <h4>Carte interactive</h4>
+            <p>Visualisez tous les trajets sur une carte de France et trouvez celui qui vous convient.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+          </div>
+          <div class="feature-content">
+            <h4>Calendrier</h4>
+            <p>Planifiez vos voyages avec notre vue calendrier et ne manquez aucune opportunité.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+            </svg>
+          </div>
+          <div class="feature-content">
+            <h4>Messagerie intégrée</h4>
+            <p>Communiquez facilement avec les autres utilisateurs via notre système de messages.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+          </div>
+          <div class="feature-content">
+            <h4>Notifications</h4>
+            <p>Restez informé en temps réel des demandes et messages reçus.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="section"
+    style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white;">
+    <div class="container text-center">
+      <h2 style="color: white; margin-bottom: var(--spacing-md);">Prêt à voyager autrement ?</h2>
+      <p style="color: rgba(255,255,255,0.9); max-width: 500px; margin: 0 auto var(--spacing-xl);">
+        Rejoignez la communauté Tigo et commencez à économiser sur vos trajets tout en aidant les autres.
+      </p>
+      <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap;">
+        <a href="/register.html" class="btn btn-lg" style="background: white; color: var(--primary);">
+          Créer mon compte gratuit
+        </a>
+        <a href="/trips.html" class="btn btn-lg"
+          style="background: transparent; border: 2px solid white; color: white;">
+          Explorer les trajets
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Commitment Section -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Notre engagement</h2>
+        <p class="section-description">
+          Une communauté engagée pour une mobilité plus durable
+        </p>
+      </div>
+      <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+        <p style="color: var(--gray-600); line-height: 1.8; font-size: 1.1rem;">
+          Chez Tigo, nous croyons que chaque trajet compte. En connectant conducteurs et passagers, nous contribuons à
+          réduire l'empreinte carbone et à créer du lien social. Notre plateforme est conçue pour être simple,
+          transparente et accessible à tous, afin de faciliter vos déplacements quotidiens et occasionnels en toute
+          sérénité.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M19 17h2l.64-2.54c.24-.959.52-1.962-.01-2.481-.53-.52-1.57-.126-2.63-.189V9a3 3 0 0 0-3-3h-2.21a5 5 0 0 0-4.58 3H4a2 2 0 0 0-2 2v4h2" />
+              <circle cx="6.5" cy="17.5" r="2.5" />
+              <circle cx="16.5" cy="17.5" r="2.5" />
+            </svg>
+            Tigo
+          </div>
+          <p class="footer-description">
+            La plateforme qui connecte conducteurs et particuliers pour du covoiturage et de la livraison de colis.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Navigation</h4>
+          <div class="footer-links">
+            <a href="/" class="footer-link">Accueil</a>
+            <a href="/trips.html" class="footer-link">Trajets</a>
+            <a href="/map.html" class="footer-link">Carte</a>
+            <a href="/calendar.html" class="footer-link">Calendrier</a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Compte</h4>
+          <div class="footer-links">
+            <a href="/login.html" class="footer-link">Connexion</a>
+            <a href="/register.html" class="footer-link">Inscription</a>
+            <a href="/profile.html" class="footer-link">Mon profil</a>
+            <a href="/messages.html" class="footer-link">Messages</a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Légal</h4>
+          <div class="footer-links">
+            <a href="#" class="footer-link">Conditions d'utilisation</a>
+            <a href="#" class="footer-link">Politique de confidentialité</a>
+            <a href="#" class="footer-link">Mentions légales</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2025 Tigo. Tous droits réservés.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+            </svg>
+          </a>
+          <a href="#" class="footer-social">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+            </svg>
+          </a>
+          <a href="#" class="footer-social">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/app.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+
+</html>
